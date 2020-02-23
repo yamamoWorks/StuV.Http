@@ -1,0 +1,76 @@
+﻿using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.WebApiCompatShim;
+using Microsoft.Extensions.Hosting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+namespace StuV.Http
+{
+    public class StubHttpServer : IDisposable
+    {
+        private readonly IWebHost webHost;
+        private readonly IList<RequestHandler> handlers = new List<RequestHandler>();
+
+        public StubHttpServer(int port) : this($"http://localhost:{port}") { }
+
+        public StubHttpServer(string url)
+        {
+            webHost = WebHost.StartWith(url, app =>
+            {
+                app.Run(async context =>
+                {
+                    var requestMessage = new HttpRequestMessageFeature(context).HttpRequestMessage;
+                    var responseMessage = handlers.FirstOrDefault(h => h.Expression(requestMessage))?.ValueCreator();
+                    await ConvertToHttpResponseAsync(responseMessage, context.Response);
+                });
+            });
+        }
+
+        public void Dispose() => webHost?.Dispose();
+
+        public RequestHandler When(Func<HttpRequestMessage, bool> expression)
+        {
+            var handler = new RequestHandler(expression);
+            handlers.Add(handler);
+            return handler;
+        }
+
+        private async Task ConvertToHttpResponseAsync(HttpResponseMessage responseMessage, HttpResponse response)
+        {
+            if (responseMessage == null)
+            {
+                response.StatusCode = 404;
+                return;
+            }
+
+            response.StatusCode = (int)responseMessage.StatusCode;
+
+            foreach (var keyValue in responseMessage.Headers)
+            {
+                foreach (var value in keyValue.Value)
+                {
+                    response.Headers.Add(keyValue.Key, value);
+                }
+            }
+
+            await responseMessage.Content.LoadIntoBufferAsync();
+
+            foreach (var keyValue in responseMessage.Content.Headers)
+            {
+                foreach (var value in keyValue.Value)
+                {
+                    response.Headers.Add(keyValue.Key, value);
+                }
+            }
+
+            await responseMessage.Content.CopyToAsync(response.Body);
+            await response.Body.FlushAsync();
+        }
+    }
+}
