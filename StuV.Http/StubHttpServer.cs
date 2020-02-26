@@ -15,7 +15,7 @@ namespace StuV.Http
     public class StubHttpServer : IDisposable
     {
         private readonly IWebHost webHost;
-        private readonly IList<RequestHandler> handlers = new List<RequestHandler>();
+        private readonly IList<Returns> handlers = new List<Returns>();
 
         public StubHttpServer(int port) : this($"http://localhost:{port}") { }
 
@@ -34,11 +34,11 @@ namespace StuV.Http
 
         public void Dispose() => webHost?.Dispose();
 
-        public RequestHandler When(Func<HttpRequestMessage, bool> expression)
+        public Returns When(Func<HttpRequestMessage, bool> expression)
         {
-            var handler = new RequestHandler(expression);
-            handlers.Add(handler);
-            return handler;
+            var returns = new Returns(expression);
+            handlers.Add(returns);
+            return returns;
         }
 
         private async Task ConvertToHttpResponseAsync(HttpResponseMessage responseMessage, HttpResponse response)

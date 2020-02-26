@@ -3,9 +3,9 @@ using System.Net.Http;
 
 namespace StuV.Http
 {
-    public class RequestHandler
+    public class Returns
     {
-        internal RequestHandler(Func<HttpRequestMessage, bool> expression)
+        internal Returns(Func<HttpRequestMessage, bool> expression)
         {
             Expression = expression;
         }
