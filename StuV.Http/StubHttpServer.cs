@@ -27,7 +27,7 @@ namespace StuV.Http
                 {
                     var requestMessage = new HttpRequestMessageFeature(context).HttpRequestMessage;
                     var responseMessage = handlers.FirstOrDefault(h => h.Expression(requestMessage))?.ValueCreator();
-                    await ConvertToHttpResponseAsync(responseMessage, context.Response);
+                    await ConvertToHttpResponseAsync(responseMessage, context.Response).ConfigureAwait(false);
                 });
             });
         }
@@ -59,7 +59,7 @@ namespace StuV.Http
                 }
             }
 
-            await responseMessage.Content.LoadIntoBufferAsync();
+            await responseMessage.Content.LoadIntoBufferAsync().ConfigureAwait(false);
 
             foreach (var keyValue in responseMessage.Content.Headers)
             {
@@ -69,8 +69,8 @@ namespace StuV.Http
                 }
             }
 
-            await responseMessage.Content.CopyToAsync(response.Body);
-            await response.Body.FlushAsync();
+            await responseMessage.Content.CopyToAsync(response.Body).ConfigureAwait(false);
+            await response.Body.FlushAsync().ConfigureAwait(false);
         }
     }
 }
