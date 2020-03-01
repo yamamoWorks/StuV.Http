@@ -3,13 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <Authors>yamamo</Authors>
     <Company>yamamoWorks</Company>
     <RepositoryUrl>https://github.com/yamamoWorks/StuV.Http</RepositoryUrl>
     <PackageProjectUrl>https://github.com/yamamoWorks/StuV.Http</PackageProjectUrl>
     <Copyright>© 2020 yamamo</Copyright>
-    <AssemblyVersion>0.2.0.0</AssemblyVersion>
+    <AssemblyVersion>0.2.1.0</AssemblyVersion>
     <Description>Simple http stub server for unit test.</Description>
     <PackageTags>Stub UnitTest C#</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>

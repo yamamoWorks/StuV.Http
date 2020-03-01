@@ -18,6 +18,11 @@ namespace StuV.Http
         }
 
         public static void ReturnString(this Returns returns, string value, string contentType = "text/plain")
+        {
+            ReturnString(returns, HttpStatusCode.OK, value, contentType);
+        }
+
+        public static void ReturnString(this Returns returns, HttpStatusCode statusCode, string value, string contentType = "text/plain")
             => returns.Return(() =>
             {
                 var content = new StringContent(value);
@@ -25,10 +30,15 @@ namespace StuV.Http
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
                 }
-                return new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
+                return new HttpResponseMessage(statusCode) { Content = content };
             });
 
         public static void ReturnFile(this Returns returns, string filePath, string contentType = null)
+        {
+            ReturnFile(returns, HttpStatusCode.OK, filePath, contentType);
+        }
+
+        public static void ReturnFile(this Returns returns, HttpStatusCode statusCode, string filePath, string contentType = null)
             => returns.Return(() =>
             {
                 var content = new StreamContent(File.OpenRead(filePath));
@@ -40,16 +50,20 @@ namespace StuV.Http
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue(presumedContentType);
                 }
-                return new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
+                return new HttpResponseMessage(statusCode) { Content = content };
             });
 
-
         public static void ReturnJson(this Returns returns, object value, JsonSerializerOptions options = null)
+        {
+            ReturnJson(returns, HttpStatusCode.OK, value, options);
+        }
+
+        public static void ReturnJson(this Returns returns, HttpStatusCode statusCode, object value, JsonSerializerOptions options = null)
             => returns.Return(() =>
             {
                 var content = new ByteArrayContent(JsonSerializer.SerializeToUtf8Bytes(value, options));
                 content.Headers.ContentType = new MediaTypeHeaderValue("application/json") { CharSet = "UTF-8" };
-                return new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
+                return new HttpResponseMessage(statusCode) { Content = content };
             });
     }
 }
